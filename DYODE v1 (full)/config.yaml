@@ -13,8 +13,8 @@ dyode_out:
   iface: lo
 
 modules:
-  "Testing module":
+  "File transfer":
      type: folder
      port: 9600
-     in: /send
-     out: /receive
+     in: /exchange
+     out: /exchange

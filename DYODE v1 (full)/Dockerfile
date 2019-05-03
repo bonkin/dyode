@@ -12,8 +12,7 @@ RUN apt-get install libssl-dev libffi-dev
 RUN pip install cryptography pyasn1-modules
 
 COPY . /app
-RUN mkdir /send
-RUN mkdir /receive
+RUN mkdir /exchange
 
 WORKDIR /app
 RUN dpkg -i udpcast_20120424_amd64.deb
