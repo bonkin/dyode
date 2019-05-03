@@ -19,7 +19,7 @@ import dyode
 #---------------------------------------------------------------------------#
 # import the modbus libraries we need
 #---------------------------------------------------------------------------#
-from pymodbus.server.async import StartTcpServer
+from pymodbus.server.asynchronous import StartTcpServer
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock
 from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
@@ -39,13 +39,13 @@ WAIT_TIME = 1
 
 def get_modbus(properties):
     try:
-        print "Performing an action which may throw an exception."
+        log.info("Performing an action which may throw an exception.")
         client = ModbusClient(properties['ip'], port=502)
         client.connect()
         log.debug(properties['registers'])
         log.debug(properties['coils'])
         modbus_values = {}
-        
+
         # Get holding registers values
         modbus_registers = {}
         for i in properties['registers']:
@@ -79,7 +79,7 @@ def get_modbus(properties):
         log.debug(str(modbus_values))
         return modbus_values
 
-    except Exception, error:
+    except Exception as error:
         log.debug('Error connecting to %s' % properties['ip'])
 
 def modbus_send(data, properties):
@@ -93,15 +93,15 @@ def modbus_send(data, properties):
     s = socket(AF_INET,SOCK_DGRAM)
 
     for i in range(1, nb_of_packets + 1):
-    	if (i < nb_of_packets):
-    		data = modbus_data[((i-1)*(buffer_size-4)):(i*(buffer_size - 4))]
-    		msg = struct.pack('>I', len(data)) + data
-    	elif (i == nb_of_packets):
-    		data = modbus_data[((i-1)*(buffer_size - 4)):data_length]
-    		msg = struct.pack('>I', len(data)) + data
-    	s.sendto(msg,addr)
-    	time.sleep(0.0002)
-    	i+= 1
+        if (i < nb_of_packets):
+            data = modbus_data[((i-1)*(buffer_size-4)):(i*(buffer_size - 4))]
+            msg = struct.pack('>I', len(data)) + data
+        elif (i == nb_of_packets):
+            data = modbus_data[((i-1)*(buffer_size - 4)):data_length]
+            msg = struct.pack('>I', len(data)) + data
+        s.sendto(msg,addr)
+        time.sleep(0.0002)
+        i+= 1
     s.sendto('', addr)
     s.close()
 
@@ -110,7 +110,7 @@ def modbus_loop(module, properties):
         try:
             data = get_modbus(properties)
             modbus_send(data, properties)
-        except Exception, error:
+        except Exception as error:
             log.debug('Error while updating modbus values')
         time.sleep(WAIT_TIME)
 
@@ -121,13 +121,13 @@ def get_modbus_data(port):
     full_data = ''
     i = 0
     while True:
-    	data, addr = s.recvfrom(2048)
-    	if not data:
-    		break
-    	else:
-    		msg_length = struct.unpack('>I', data[:4])[0]
-    		full_data += data[4:(msg_length+4)]
-    		i+=1
+        data, addr = s.recvfrom(2048)
+        if not data:
+            break
+        else:
+            msg_length = struct.unpack('>I', data[:4])[0]
+            full_data += data[4:(msg_length+4)]
+            i+=1
 
     s.close()
     return pickle.loads(full_data)
@@ -145,7 +145,7 @@ def modbus_master_update(a):
         for register_start, values in data['registers'].iteritems():
             log.debug('Register start at : %s with values : %s' % (register_start, values))
             a[2][0x01].setValues(3, int(register_start), values)
-    except Exception, error:
+    except Exception as error:
         log.error('Error obtaining Modbus values')
         return 0
 
@@ -179,4 +179,4 @@ def modbus_master(module, properties):
     loop = LoopingCall(f=modbus_master_update, a=(module, properties, context))
     loop.start(time, now=False) # initially delay by time
     StartTcpServer(context, identity=identity, address=("0.0.0.0", \
-                   properties['port_out']))
+                                                        properties['port_out']))

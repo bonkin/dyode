@@ -1,0 +1,20 @@
+config_name: "Dyode test"
+config_version : 1.0
+config_date: 2019-05-03
+max_bitrate: 100
+
+dyode_in:
+  ip: 127.0.0.1
+  mac: 00:00:00:00:00:00
+  iface: lo
+dyode_out:
+  ip: 127.0.0.1
+  mac: 00:00:00:00:00:00
+  iface: lo
+
+modules:
+  "Testing module":
+     type: folder
+     port: 9600
+     in: /home/inbonkin/IdeaProjects/dyode/input
+     out: /home/inbonkin/IdeaProjects/dyode/output
