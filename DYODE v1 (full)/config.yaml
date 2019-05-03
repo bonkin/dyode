@@ -16,5 +16,5 @@ modules:
   "Testing module":
      type: folder
      port: 9600
-     in: /home/inbonkin/IdeaProjects/dyode/input
-     out: /home/inbonkin/IdeaProjects/dyode/output
+     in: /send
+     out: /receive
