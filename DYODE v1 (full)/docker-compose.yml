@@ -1,0 +1,15 @@
+version: '2'
+services:
+  dyode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dyode:0.1
+    volumes:
+      - '/var/opt/:/exchange'
+    tmpfs: /tmp
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    command: 'sudo python2 dyode_out.py'
+
